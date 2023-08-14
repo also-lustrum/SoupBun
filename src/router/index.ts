@@ -17,6 +17,13 @@ const routes: RouteRecordRaw[] = [
     path: '/virtual-list-easy',
     component: () => import('@/view/virtual-list-easy/index.vue')
   },
+  {
+    /**
+     * 虚拟列表
+     * */
+    path: '/virtual-list',
+    component: () => import('@/view/virtual-list/index.vue')
+  },
 ]
 
 const router = createRouter({
