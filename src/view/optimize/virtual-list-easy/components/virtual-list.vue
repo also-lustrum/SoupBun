@@ -58,7 +58,6 @@ const listStyle = computed(() => {
 })
 
 watch([startIndex, endIndex], (val) => {
-  console.log('11111111111')
   let index = 0
   const startIndex = val[0]
   if (startIndex > props.size * props.page) {

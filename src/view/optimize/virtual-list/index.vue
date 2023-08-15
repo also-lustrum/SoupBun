@@ -4,10 +4,10 @@
       :list="listInfo.list"
       :width="800"
       :height="500"
+      :itemHeight="'50px'"
       v-slot="{ item, index }"
     >
-      {{ item }}
-      {{ index }}
+      {{ item }} - {{ index }}
     </virtualList>
   </div>
 </template>
