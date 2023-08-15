@@ -1,29 +1,39 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import { RouteRecordRaw } from 'vue-router'
 
+const optimize = [
+  {
+    // 虚拟列表-简单
+    path: '/virtual-list-easy',
+    component: () => import('@/view/optimize/virtual-list-easy/index.vue')
+  },
+  {
+    // 虚拟列表
+    path: '/virtual-list',
+    component: () => import('@/view/optimize/virtual-list/index.vue')
+  },
+]
+
+const directive = [
+  {
+    // 点击复制
+    path: '/click-copy',
+    component: () => import('@/view/directive/click-copy/index.vue')
+  },
+  {
+    // 盒子观察者
+    path: '/observe-box',
+    component: () => import('@/view/directive/observe-box/index.vue')
+  },
+]
+
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    redirect: '/home'
+    redirect: '/virtual-list-easy'
   },
-  {
-    path: '/home',
-    component: () => import('@/view/home/index.vue')
-  },
-  {
-    /**
-     * 虚拟列表-简单
-     * */
-    path: '/virtual-list-easy',
-    component: () => import('@/view/virtual-list-easy/index.vue')
-  },
-  {
-    /**
-     * 虚拟列表
-     * */
-    path: '/virtual-list',
-    component: () => import('@/view/virtual-list/index.vue')
-  },
+  ...optimize,
+  ...directive
 ]
 
 const router = createRouter({
