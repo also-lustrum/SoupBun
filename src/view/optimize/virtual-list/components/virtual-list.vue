@@ -6,8 +6,16 @@
     @scroll="handleScroll"
   >
     <div ref="list-container" :style="listStyle">
-      <div v-for="(item, index) in visibleList" :key="index" :style="itemStyle">
-        <slot :event="item" :item="item" :index="index"></slot>
+      <div
+        v-for="(item, index) in visibleList.list"
+        :key="visibleList.startIndex + index"
+        :style="getItemStyle(visibleList.startIndex + index)"
+      >
+        <slot
+          :event="item"
+          :item="item"
+          :index="visibleList.startIndex + index"
+        ></slot>
       </div>
     </div>
   </div>
@@ -15,7 +23,8 @@
 
 <script setup lang="ts">
 import { STYLE_LIST } from './constants'
-import { ContainerStyle } from './index.ts'
+import { ContainerStyle, VisibleList } from './index.ts'
+import { CSSProperties } from 'vue'
 
 const props = defineProps({
   list: {
@@ -36,19 +45,15 @@ const props = defineProps({
   }
 })
 
-/**
- * bug
- * 无法持续添加
- * index 不变
- */
-
 const containerRef = ref<HTMLElement | null>(null)
 
 const containerStyle = ref<ContainerStyle>({ width: '', height: '' })
 const listStyle = ref()
-const itemStyle = ref()
 
-const visibleList = ref<any[]>([])
+const visibleList = reactive<VisibleList>({
+  list: [],
+  startIndex: 0
+})
 
 const init = async () => {
   await setTimeout(() => {}, 0)
@@ -62,14 +67,33 @@ const setDomStyle = () => {
     height: typeof props.width === 'string' ? props.height : `${props.height}px`
   }
   listStyle.value = {
-    ...STYLE_LIST
+    ...STYLE_LIST,
+    height: `${props.list.length * gainNumberSize(props.itemHeight)}px`
   }
-  itemStyle.value = {
+}
+
+const getItemStyle = (index: number) => {
+  const top = `${index * gainNumberSize(props.itemHeight)}px`
+  console.log({
+    position: 'absolute',
+    left: 0,
+    top,
+    width: '100%',
     minHeight:
       typeof props.itemHeight === 'string'
         ? props.itemHeight
         : `${props.itemHeight}px`
-  }
+  })
+  return {
+    position: 'absolute',
+    left: 0,
+    top,
+    width: '100%',
+    minHeight:
+      typeof props.itemHeight === 'string'
+        ? props.itemHeight
+        : `${props.itemHeight}px`
+  } as CSSProperties
 }
 
 onMounted(() => init())
@@ -77,11 +101,11 @@ onMounted(() => init())
 const scrollRender = (scrollTop: number) => {
   const indexResult = getVisibleRange(scrollTop)
   const { start, end } = indexResult
-  console.log(start, end)
   if (!end) return
-  visibleList.value.length = 0
+  visibleList.list = []
+  visibleList.startIndex = start
   for (let i = start; i < end; i++) {
-    visibleList.value.push(props.list[i])
+    visibleList.list.push(props.list[i])
   }
 }
 // 获取 number 类型尺寸
@@ -102,7 +126,7 @@ function getVisibleRange(scrollTop: number): { start: number; end: number } {
   const itemHeight = gainNumberSize(props.itemHeight)
   if (!height || !itemHeight) return index
   index.start = ~~(scrollTop / itemHeight)
-  index.end = height / itemHeight + index.start + 5
+  index.end = height / itemHeight + index.start
   return index
 }
 
