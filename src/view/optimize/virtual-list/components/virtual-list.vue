@@ -42,6 +42,10 @@ const props = defineProps({
   itemHeight: {
     type: [Number, String],
     required: true
+  },
+  unit: {
+    type: String,
+    default: 'px'
   }
 })
 
@@ -60,30 +64,28 @@ const init = async () => {
   setDomStyle()
   scrollRender(0)
 }
-
+// 设置基础样式
 const setDomStyle = () => {
   containerStyle.value = {
-    width: typeof props.width === 'string' ? props.width : `${props.width}px`,
-    height: typeof props.width === 'string' ? props.height : `${props.height}px`
+    width:
+      typeof props.width === 'string'
+        ? props.width
+        : `${props.width}${props.unit}`,
+    height:
+      typeof props.width === 'string'
+        ? props.height
+        : `${props.height}${props.unit}`
   }
   listStyle.value = {
     ...STYLE_LIST,
-    height: `${props.list.length * gainNumberSize(props.itemHeight)}px`
+    height: `${props.list.length * gainNumberSize(props.itemHeight)}${
+      props.unit
+    }`
   }
 }
-
+// 获取每一项基样式
 const getItemStyle = (index: number) => {
-  const top = `${index * gainNumberSize(props.itemHeight)}px`
-  console.log({
-    position: 'absolute',
-    left: 0,
-    top,
-    width: '100%',
-    minHeight:
-      typeof props.itemHeight === 'string'
-        ? props.itemHeight
-        : `${props.itemHeight}px`
-  })
+  const top = `${index * gainNumberSize(props.itemHeight)}${props.unit}`
   return {
     position: 'absolute',
     left: 0,
@@ -92,12 +94,13 @@ const getItemStyle = (index: number) => {
     minHeight:
       typeof props.itemHeight === 'string'
         ? props.itemHeight
-        : `${props.itemHeight}px`
+        : `${props.itemHeight}${props.unit}`
   } as CSSProperties
 }
 
 onMounted(() => init())
 
+// 渲染可视列表
 const scrollRender = (scrollTop: number) => {
   const indexResult = getVisibleRange(scrollTop)
   const { start, end } = indexResult
@@ -116,6 +119,7 @@ function gainNumberSize(size: string | number): number {
   }
   return 0
 }
+
 // 获取可视区域的列表索引
 function getVisibleRange(scrollTop: number): { start: number; end: number } {
   const index = {

@@ -4,7 +4,7 @@
       :list="listInfo.list"
       :width="800"
       :height="500"
-      :itemHeight="'50px'"
+      :itemHeight="50"
       v-slot="{ item, index }"
     >
       {{ item }} - {{ index }}
