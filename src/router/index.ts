@@ -5,7 +5,7 @@ import { optimize, directive, feature } from './module'
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    redirect: '/virtual-list-easy'
+    redirect: '/large-file-upload'
   },
   ...optimize,
   ...directive,

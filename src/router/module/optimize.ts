@@ -10,4 +10,9 @@ export const optimize = [
     path: '/virtual-list',
     component: () => import('@/view/optimize/virtual-list/index.vue')
   },
+  {
+    // 大文件上传
+    path: '/large-file-upload',
+    component: () => import('@/view/optimize/large-file-upload/index.vue')
+  },
 ]
