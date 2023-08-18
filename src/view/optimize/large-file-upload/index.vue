@@ -85,8 +85,8 @@ function calculateHash(): Promise<string> {
     }
 
     reader.readAsArrayBuffer(new Blob(chunks))
-    reader.onload = (e) => {
-      spark.append(e.target.result)
+    reader.onload = (e: any) => {
+      spark.append(e.target?.result)
       resolve(spark.end())
     }
   })
