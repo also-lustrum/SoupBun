@@ -8,9 +8,14 @@
 <script lang="ts" setup>
 import SparkMD5 from 'spark-md5'
 import { verifyUpload } from './api/upload'
+import type { InstantUpload, ChunkListItem } from './types'
 
+// 文件详情
 const fileInfo = ref<File>()
+// 文件hash
 const hash = ref('')
+// 分片后文件列表
+const chunkList = ref<ChunkListItem[]>([])
 
 const chooseFile = (e: any) => {
   const [file] = e.target.files
@@ -20,9 +25,24 @@ const chooseFile = (e: any) => {
 
 const upload = async () => {
   if (!fileInfo.value) return
-  const chunkFileList = createFileChunk(fileInfo.value, 3 * 1024 * 1024)
   hash.value = await calculateHash()
-  await verifyUpload(fileInfo.value.name, hash.value)
+  // 判断文件是否可以秒传
+  const { shouldUpload, uploadList } = await instantUpload(
+    fileInfo.value.name,
+    hash.value
+  )
+  // 文件已存在 无需上传
+  if (!shouldUpload) return
+  // 文件需要上传 开始分片
+  const chunkFileList = createFileChunk(fileInfo.value, 3 * 1024 * 1024)
+  chunkList.value = chunkFileList.map(({ file }, index) => ({
+    chunk: file,
+    size: file.size,
+    chunkHash: `${hash.value} - ${index}`,
+    fileHash: hash.value,
+    index,
+    percentage: uploadList.includes(`${hash.value} - ${index}`) ? 100 : 0
+  }))
 }
 
 // 文件分片
@@ -70,6 +90,21 @@ function calculateHash(): Promise<string> {
       resolve(spark.end())
     }
   })
+}
+
+/**
+ * 判断文件是可以秒传
+ * @params fileName 文件名
+ * @params fileHash 文件hash
+ * @return shouldUpload 文件是否需要上传 true: 需要 false: 不需要
+ * @return uploadList 上传文件列表
+ */
+async function instantUpload(
+  fileName: string,
+  fileHash: string
+): Promise<InstantUpload> {
+  const { data } = await verifyUpload(JSON.stringify({ fileName, fileHash }))
+  return data
 }
 </script>
 
