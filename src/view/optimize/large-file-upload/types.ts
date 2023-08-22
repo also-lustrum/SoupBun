@@ -10,4 +10,5 @@ export interface ChunkListItem {
   fileHash: string,
   index: number
   percentage: number,
+  status: number
 }

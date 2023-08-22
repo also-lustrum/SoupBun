@@ -16,6 +16,8 @@ const fileInfo = ref<File>()
 const hash = ref('')
 // 分片后文件列表
 const chunkList = ref<ChunkListItem[]>([])
+// 请求列表
+const requestList = ref<ChunkListItem[]>([])
 
 const chooseFile = (e: any) => {
   const [file] = e.target.files
@@ -43,9 +45,16 @@ const upload = async () => {
     index,
     percentage: uploadList.includes(`${hash.value} - ${index}`) ? 100 : 0
   }))
+  // 上传分片
+  uploadChunks(uploadList)
 }
 
-// 文件分片
+/**
+ * 文件分片
+ * @params file 文件
+ * @params size 每片大小
+ * @return fileChunkList 分片后文件
+ */
 function createFileChunk(file: File, size: number) {
   const fileChunkList = []
   let cur = 0
@@ -56,7 +65,7 @@ function createFileChunk(file: File, size: number) {
   return fileChunkList
 }
 
-// 计算hash
+/** 计算文件hash */
 function calculateHash(): Promise<string> {
   return new Promise((resolve) => {
     const spark = new SparkMD5.ArrayBuffer()
@@ -105,6 +114,84 @@ async function instantUpload(
 ): Promise<InstantUpload> {
   const { data } = await verifyUpload(JSON.stringify({ fileName, fileHash }))
   return data
+}
+
+// 上传文件切片
+async function uploadChunks(uploadedList: string[]) {
+  requestList.value = chunkList.value.filter((chunk) =>
+    uploadedList.includes(chunk.chunkHash)
+  )
+  await sendRequest(requestList.value)
+}
+const Status = { wait: 1, error: 2, done: 3, fail: 4 }
+// 控制请求发送以及上传错误处理
+function sendRequest(form: ChunkListItem[], max = 4) {
+  return new Promise((resolve) => {
+    const len = form.length
+    let counter = 0 // 发送成功的请求数
+    const retryArr = []
+    form.forEach((item) => (item.status = Status.wait))
+    const start = async () => {
+      let Err = false
+      while (counter < len && !isPaused.value && !Err) {
+        // 创建请求列表
+        let requestArr = []
+        // 并发控制请求
+        for (let i = 0; i < max; i++) {
+          let idx = form.findIndex(
+            (item) => item.status == Status.wait || item.status == Status.error
+          )
+          if (idx == -1) {
+            Err = true
+            return
+          }
+          form[idx].status = Status.done
+          let { index } = form[idx]
+          requestArr.push(
+            uploadChunks(
+              form[idx],
+              onProgress(chunkList.value[index]),
+              controller.value.signal
+            )
+              .then(() => {
+                form[idx].status = Status.done
+                counter++
+                if (counter === len) {
+                  resolve()
+                }
+              })
+              .catch((err) => {
+                // console.log("err-----》", err);
+                form[idx].status = Status.error
+                if (typeof retryArr[index] !== 'number') {
+                  if (!isPaused.value) {
+                    ElMessage.info(`第 ${index} 个片段上传失败，系统准备重试`)
+                    retryArr[index] = 0
+                  }
+                }
+                // 次数累加
+                retryArr[index]++
+                if (retryArr[index] > 3) {
+                  ElMessage.error(
+                    `第 ${index} 个片段重试多次无效，系统准备放弃上传`
+                  )
+                  form[idx].status = Status.fail
+                  form[idx].percentage = 0
+                  // 终止当前所有请求
+                  Err = true
+                  requestArr.forEach((element) => {
+                    controller.value.abort()
+                  })
+                  requestArr = []
+                }
+              })
+          )
+          await Promise.all(requestArr)
+        }
+      }
+    }
+    start()
+  })
 }
 </script>
 
