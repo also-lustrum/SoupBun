@@ -10,4 +10,9 @@ export const interestingCss = [
     path: '/rising-bubble',
     component: () => import('@/view/interesting-css/rising-bubble/index.vue')
   },
+  {
+    // 文字交融展开
+    path: '/text-merge',
+    component: () => import('@/view/interesting-css/text-merge/index.vue')
+  }
 ]
