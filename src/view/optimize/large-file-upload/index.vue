@@ -7,7 +7,7 @@
 
 <script lang="ts" setup>
 import SparkMD5 from 'spark-md5'
-import { verifyUpload } from './api/upload'
+import { verifyUpload, uploadChunk } from './api/upload'
 import type { InstantUpload, ChunkListItem } from './types'
 
 // 文件详情
@@ -18,6 +18,9 @@ const hash = ref('')
 const chunkList = ref<ChunkListItem[]>([])
 // 请求列表
 const requestList = ref<ChunkListItem[]>([])
+const isPaused = ref(false)
+// 请求控制器
+const controller = ref<AbortController | null>(null)
 
 const chooseFile = (e: any) => {
   const [file] = e.target.files
@@ -118,37 +121,41 @@ async function instantUpload(
 
 // 上传文件切片
 async function uploadChunks(uploadedList: string[]) {
-  requestList.value = chunkList.value.filter((chunk) =>
-    uploadedList.includes(chunk.chunkHash)
+  if (controller.value) {
+    controller.value = null
+  }
+  controller.value = new AbortController()
+  requestList.value = chunkList.value.filter(
+    (chunk) => !uploadedList.includes(chunk.chunkHash)
   )
   await sendRequest(requestList.value)
 }
 const Status = { wait: 1, error: 2, done: 3, fail: 4 }
+
 // 控制请求发送以及上传错误处理
 function sendRequest(form: ChunkListItem[], max = 4) {
   return new Promise((resolve) => {
     const len = form.length
     let counter = 0 // 发送成功的请求数
-    const retryArr = []
+    const retryArr: number[] = []
     form.forEach((item) => (item.status = Status.wait))
     const start = async () => {
       let Err = false
       while (counter < len && !isPaused.value && !Err) {
         // 创建请求列表
-        let requestArr = []
+        let requestArr: Promise<void>[] = []
         // 并发控制请求
         for (let i = 0; i < max; i++) {
-          let idx = form.findIndex(
-            (item) => item.status == Status.wait || item.status == Status.error
+          const idx = form.findIndex(
+            (item) =>
+              item.status === Status.wait || item.status === Status.error
           )
-          if (idx == -1) {
-            Err = true
-            return
-          }
+          if (idx === -1) return (Err = true)
           form[idx].status = Status.done
           let { index } = form[idx]
+          if (!controller.value) return
           requestArr.push(
-            uploadChunks(
+            uploadChunk(
               form[idx],
               onProgress(chunkList.value[index]),
               controller.value.signal
@@ -157,41 +164,48 @@ function sendRequest(form: ChunkListItem[], max = 4) {
                 form[idx].status = Status.done
                 counter++
                 if (counter === len) {
-                  resolve()
+                  resolve('')
                 }
               })
-              .catch((err) => {
-                // console.log("err-----》", err);
+              .catch(() => {
                 form[idx].status = Status.error
                 if (typeof retryArr[index] !== 'number') {
                   if (!isPaused.value) {
-                    ElMessage.info(`第 ${index} 个片段上传失败，系统准备重试`)
+                    console.log(`第 ${index} 个片段上传失败，系统准备重试`)
                     retryArr[index] = 0
                   }
                 }
                 // 次数累加
                 retryArr[index]++
                 if (retryArr[index] > 3) {
-                  ElMessage.error(
+                  console.log(
                     `第 ${index} 个片段重试多次无效，系统准备放弃上传`
                   )
                   form[idx].status = Status.fail
                   form[idx].percentage = 0
                   // 终止当前所有请求
                   Err = true
-                  requestArr.forEach((element) => {
+                  requestArr.forEach(() => {
+                    if (!controller.value) return
                     controller.value.abort()
                   })
                   requestArr = []
                 }
               })
           )
+          console.log(requestArr)
           await Promise.all(requestArr)
         }
       }
     }
     start()
   })
+}
+// 上传进度监听函数
+function onProgress(item: ChunkListItem) {
+  return (e: ProgressEvent) => {
+    item.percentage = parseInt(String((e.loaded / e.total) * 100))
+  }
 }
 </script>
 
