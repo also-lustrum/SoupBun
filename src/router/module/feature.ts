@@ -9,4 +9,9 @@ export const feature = [
     path: '/watermark-text',
     component: () => import('@/view/feature/watermark-text/index.vue')
   },
+  {
+    // 音乐播放器
+    path: '/music-player',
+    component: () => import('@/view/feature/watermark-text/index.vue')
+  },
 ]
