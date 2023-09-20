@@ -19,5 +19,10 @@ export const interestingCss = [
     // 网格布局动画
     path: '/grid-animation',
     component: () => import('@/view/interesting-css/grid-animation/index.vue')
+  },
+  {
+    // 视差效果
+    path: '/parallax-anmiation',
+    component: () => import('@/view/interesting-css/parallax-anmiation/index.vue')
   }
 ]
