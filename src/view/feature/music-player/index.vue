@@ -46,9 +46,7 @@
  * 解析歌词字符串
  * @return 歌词的数组对象 { time: 开始时间, words: 结束时间 }[]
  *  */
-function parseLre() {
-
-}
+function parseLre() {}
 </script>
 
 <style scoped lang="scss">
