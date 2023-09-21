@@ -5,7 +5,10 @@
     :style="containerStyle"
     @scroll="handleScroll"
   >
-    <div ref="list-container" :style="listStyle">
+    <div
+      ref="list-container"
+      :style="listStyle"
+    >
       <div
         v-for="(item, index) in visibleList.list"
         :key="visibleList.startIndex + index"
@@ -150,3 +153,4 @@ const handleScroll = () => {
   }
 }
 </style>
+

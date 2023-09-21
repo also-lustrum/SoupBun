@@ -5,7 +5,11 @@
       :item-height="150"
       @index-change="indexChange"
     >
-      <div class="v-list-item" v-for="item in lastData" :key="item.id">
+      <div
+        class="v-list-item"
+        v-for="item in lastData"
+        :key="item.id"
+      >
         {{ item.name }}
       </div>
     </virtual-list>
@@ -81,3 +85,4 @@ const lastData = computed(() => {
   padding-left: 30px;
 }
 </style>
+

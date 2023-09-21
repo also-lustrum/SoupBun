@@ -1,6 +1,13 @@
 <template>
-  <div class="container" ref="container" @scroll="scrollHandle">
-    <div class="list-container" :style="listStyle">
+  <div
+    class="container"
+    ref="container"
+    @scroll="scrollHandle"
+  >
+    <div
+      class="list-container"
+      :style="listStyle"
+    >
       <slot></slot>
     </div>
   </div>
@@ -98,3 +105,4 @@ const scrollHandle = () => {
   width: 100%;
 }
 </style>
+

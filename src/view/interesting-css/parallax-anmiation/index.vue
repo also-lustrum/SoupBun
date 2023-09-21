@@ -1,13 +1,15 @@
 <template>
   <div class="container">
-    <div class="item" v-for="(, index) in 5">
+    <div
+      class="item"
+      v-for="(item, index) in 5"
+    >
       <img :src="`/src/assets/bg${index + 1}.jpg`" />
     </div>
   </div>
 </template>
 
-<script lang="ts" setup>
-</script>
+<script lang="ts" setup></script>
 
 <style scoped lang="scss">
 .container {
@@ -18,8 +20,7 @@
     'A A B'
     'C D B'
     'C E E';
-    gap: 10px
-  ;
+  gap: 10px;
   width: 300px;
   height: 300px;
   margin: 100px auto 0;
@@ -62,3 +63,4 @@
   }
 }
 </style>
+
