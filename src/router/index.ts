@@ -5,7 +5,7 @@ import { optimize, directive, feature, interestingCss } from './module'
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    redirect: '/music-player'
+    redirect: '/watermark-text'
   },
   ...optimize,
   ...directive,
