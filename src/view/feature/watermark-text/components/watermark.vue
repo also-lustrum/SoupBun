@@ -1,12 +1,15 @@
 <template>
-  <div class="watermark_container" ref="paeentRef">
+  <div
+    class="watermark_container"
+    ref="paeentRef"
+  >
     <slot></slot>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted } from 'vue';
-import useWatermarkBg from '../hooks/useWatermarkBg';
+import { onMounted } from 'vue'
+import useWatermarkBg from '../hooks/useWatermarkBg'
 
 const props = defineProps({
   text: {
@@ -29,10 +32,10 @@ const paeentRef = ref<HTMLElement | null>(null)
 let div = null as HTMLElement | null
 /** 重置水印 */
 function resetWatermack() {
-  if(!paeentRef.value) return;
-  if(!bg.value) return
-  if(div) {
-    div.remove();
+  if (!paeentRef.value) return
+  if (!bg.value) return
+  if (div) {
+    div.remove()
   }
   const { base64, size } = bg.value
   div = document.createElement('div')
@@ -47,7 +50,7 @@ function resetWatermack() {
 
 onMounted(() => {
   resetWatermack()
-  if(!paeentRef.value) return;
+  if (!paeentRef.value) return
   ob.observe(paeentRef.value, {
     childList: true,
     subtree: true,
@@ -56,13 +59,13 @@ onMounted(() => {
 })
 
 const ob = new MutationObserver((entries) => {
-  for(const entry of entries) {
+  for (const entry of entries) {
     // 删除 dom 处理
     for (const dom of entry.removedNodes) {
-      if(dom === div) return resetWatermack();
+      if (dom === div) return resetWatermack()
     }
     // 修改 dom 处理
-    if(entry.target === div) return resetWatermack();
+    if (entry.target === div) return resetWatermack()
   }
 })
 </script>
@@ -74,3 +77,4 @@ const ob = new MutationObserver((entries) => {
   height: 100%;
 }
 </style>
+
