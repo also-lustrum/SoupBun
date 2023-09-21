@@ -12,6 +12,6 @@ export const feature = [
   {
     // 音乐播放器
     path: '/music-player',
-    component: () => import('@/view/feature/watermark-text/index.vue')
+    component: () => import('@/view/feature/music-player/index.vue')
   },
 ]
