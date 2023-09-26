@@ -24,5 +24,11 @@ export const interestingCss = [
     // 视差效果
     path: '/parallax-anmiation',
     component: () => import('@/view/interesting-css/parallax-anmiation/index.vue')
-  }
+  },
+  {
+    // 加载动画
+    path: '/loading-animation',
+    component: () => import('@/view/interesting-css/loading-animation/index.vue')
+  },
+  
 ]
