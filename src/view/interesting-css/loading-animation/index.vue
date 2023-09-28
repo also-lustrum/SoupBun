@@ -9,21 +9,19 @@
       ></span>
     </div>
     <div class="text">
-      <span style="--i: 0">L</span>
-      <span style="--i: 1">o</span>
-      <span style="--i: 2">a</span>
-      <span style="--i: 3">d</span>
-      <span style="--i: 4">i</span>
-      <span style="--i: 5">n</span>
-      <span style="--i: 6">g</span>
-      <span style="--i: 7">.</span>
-      <span style="--i: 8">.</span>
-      <span style="--i: 9">.</span>
+      <span
+        v-for="(item, index) in text"
+        :style="{ '--i': index }"
+      >
+        {{ item }}
+      </span>
     </div>
   </div>
 </template>
 
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+const text = ['L', 'o', 'a', 'd', 'i', 'n', 'g', '.', '.', '.']
+</script>
 
 <style scoped lang="scss">
 .page {
