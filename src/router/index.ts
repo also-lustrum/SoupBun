@@ -1,6 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import { RouteRecordRaw } from 'vue-router'
-import { optimize, directive, feature, interestingCss } from './module'
+import { optimize, directive, feature, interestingCss, interestingJs } from './module'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -10,7 +10,8 @@ const routes: RouteRecordRaw[] = [
   ...optimize,
   ...directive,
   ...feature,
-  ...interestingCss
+  ...interestingCss,
+  ...interestingJs
 ]
 
 const router = createRouter({
