@@ -9,4 +9,9 @@ export const feature = [
     path: '/watermark-text',
     component: () => import('@/view/feature/watermark-text/index.vue')
   },
+  {
+    // 权限控制
+    path: '/authority-control',
+    component: () => import('@/view/feature/authority-control/index.vue')
+  }
 ]
