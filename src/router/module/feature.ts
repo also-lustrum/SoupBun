@@ -13,5 +13,10 @@ export const feature = [
     // 权限控制
     path: '/authority-control',
     component: () => import('@/view/feature/authority-control/index.vue')
-  }
+  },
+  {
+    // 拖拽列表
+    path: '/drag-list',
+    component: () => import('@/view/feature/drag-list/index.vue')
+  },
 ]
