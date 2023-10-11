@@ -8,8 +8,38 @@ export default defineConfig({
   plugins: [
     vue(),
     AutoImport({
-      // 自动导入 Vue 相关函数，如：ref, reactive, toRef 等
-      imports: ['vue'],
+      imports: [
+        {
+          vue: [
+            'ref',
+            'reactive',
+            'watch',
+            'onBeforeUnmount',
+            'onMounted',
+            'onDeactivated',
+            'onActivated',
+            'computed',
+            'defineProps',
+            'defineEmits',
+            'nextTick'
+          ],
+          '@/shared/general.ts': [
+            'isArray',
+            'isString',
+            'isSymbol',
+            'isObject',
+            'isFunction',
+            'isMap',
+            'isSet',
+            'isRegExp',
+            'isPromise',
+            'isPlainObject',
+            'toTypeString',
+            'hasOwn'
+          ]
+        }
+      ],
+      
   })],
   server: {
     host: "localhost",

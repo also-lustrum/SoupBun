@@ -7,6 +7,7 @@
 
 <script lang="ts" setup>
 import { useAuth } from '../hooks/useAuth.ts'
+import type { PropType } from 'vue'
 
 const props = defineProps({
   permission: {
@@ -19,7 +20,7 @@ const { permissions } = useAuth()
 const show = computed(() => {
   if (!props.permission) return true
   if (!permissions) return false
-  if (Array.isArray(props.permission)) {
+  if (isArray(props.permission)) {
     return props.permission.every((item) => permissions.includes(item))
   } else {
     return permissions.includes(props.permission)

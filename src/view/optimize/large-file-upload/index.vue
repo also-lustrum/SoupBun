@@ -1,6 +1,9 @@
 <template>
   <div class="page">
-    <input type="file" @change="chooseFile" />
+    <input
+      type="file"
+      @change="chooseFile"
+    />
     <button @click="upload">上传</button>
   </div>
 </template>
@@ -32,10 +35,7 @@ const upload = async () => {
   if (!fileInfo.value) return
   hash.value = await calculateHash()
   // 判断文件是否可以秒传
-  const { shouldUpload, uploadList } = await instantUpload(
-    fileInfo.value.name,
-    hash.value
-  )
+  const { shouldUpload, uploadList } = await instantUpload(fileInfo.value.name, hash.value)
   // 文件已存在 无需上传
   if (!shouldUpload) return
   // 文件需要上传 开始分片
@@ -111,10 +111,7 @@ function calculateHash(): Promise<string> {
  * @return shouldUpload 文件是否需要上传 true: 需要 false: 不需要
  * @return uploadList 上传文件列表
  */
-async function instantUpload(
-  fileName: string,
-  fileHash: string
-): Promise<InstantUpload> {
+async function instantUpload(fileName: string, fileHash: string): Promise<InstantUpload> {
   const { data } = await verifyUpload(JSON.stringify({ fileName, fileHash }))
   return data
 }
@@ -125,9 +122,7 @@ async function uploadChunks(uploadedList: string[]) {
     controller.value = null
   }
   controller.value = new AbortController()
-  requestList.value = chunkList.value.filter(
-    (chunk) => !uploadedList.includes(chunk.chunkHash)
-  )
+  requestList.value = chunkList.value.filter((chunk) => !uploadedList.includes(chunk.chunkHash))
   await sendRequest(requestList.value)
 }
 const Status = { wait: 1, error: 2, done: 3, fail: 4 }
@@ -146,20 +141,13 @@ function sendRequest(form: ChunkListItem[], max = 4) {
         let requestArr: Promise<void>[] = []
         // 并发控制请求
         for (let i = 0; i < max; i++) {
-          const idx = form.findIndex(
-            (item) =>
-              item.status === Status.wait || item.status === Status.error
-          )
+          const idx = form.findIndex((item) => item.status === Status.wait || item.status === Status.error)
           if (idx === -1) return (Err = true)
           form[idx].status = Status.done
           let { index } = form[idx]
           if (!controller.value) return
           requestArr.push(
-            uploadChunk(
-              form[idx],
-              onProgress(chunkList.value[index]),
-              controller.value.signal
-            )
+            uploadChunk(form[idx], onProgress(chunkList.value[index]), controller.value.signal)
               .then(() => {
                 form[idx].status = Status.done
                 counter++
@@ -178,9 +166,7 @@ function sendRequest(form: ChunkListItem[], max = 4) {
                 // 次数累加
                 retryArr[index]++
                 if (retryArr[index] > 3) {
-                  console.log(
-                    `第 ${index} 个片段重试多次无效，系统准备放弃上传`
-                  )
+                  console.log(`第 ${index} 个片段重试多次无效，系统准备放弃上传`)
                   form[idx].status = Status.fail
                   form[idx].percentage = 0
                   // 终止当前所有请求
@@ -216,3 +202,4 @@ function onProgress(item: ChunkListItem) {
   padding: 80px;
 }
 </style>
+

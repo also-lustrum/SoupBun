@@ -70,20 +70,12 @@ const init = async () => {
 // 设置基础样式
 const setDomStyle = () => {
   containerStyle.value = {
-    width:
-      typeof props.width === 'string'
-        ? props.width
-        : `${props.width}${props.unit}`,
-    height:
-      typeof props.width === 'string'
-        ? props.height
-        : `${props.height}${props.unit}`
+    width: isString(props.width) ? props.width : `${props.width}${props.unit}`,
+    height: isString(props.height) ? props.height : `${props.height}${props.unit}`
   }
   listStyle.value = {
     ...STYLE_LIST,
-    height: `${props.list.length * gainNumberSize(props.itemHeight)}${
-      props.unit
-    }`
+    height: `${props.list.length * gainNumberSize(props.itemHeight)}${props.unit}`
   }
 }
 // 获取每一项基样式
@@ -94,10 +86,7 @@ const getItemStyle = (index: number) => {
     left: 0,
     top,
     width: '100%',
-    minHeight:
-      typeof props.itemHeight === 'string'
-        ? props.itemHeight
-        : `${props.itemHeight}${props.unit}`
+    minHeight: isString(props.itemHeight) ? props.itemHeight : `${props.itemHeight}${props.unit}`
   } as CSSProperties
 }
 

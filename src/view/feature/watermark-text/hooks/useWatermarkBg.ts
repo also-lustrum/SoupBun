@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-
+import type { ComputedRef } from 'vue'
 interface Props {
   text: string
   fontSize: number
