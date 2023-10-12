@@ -19,4 +19,8 @@ export const feature = [
     path: '/drag-list',
     component: () => import('@/view/feature/drag-list/index.vue')
   },
+  {
+    path: '/flip-practice',
+    component: () => import('@/view/feature/flip-practice/index.vue')
+  },
 ]
