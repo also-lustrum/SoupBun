@@ -67,7 +67,6 @@ const first = () => {
     const bcr = dom.getBoundingClientRect()
     dom.startX = bcr.left
     dom.startY = bcr.top
-    console.log('first', dom.getBoundingClientRect())
   }
 }
 
