@@ -1,4 +1,6 @@
-<template>可以重试的请求</template>
+<template>
+  可以重试的请求
+</template>
 <script setup lang="ts">
 /**
  * 可以重试的请求
@@ -11,4 +13,5 @@ function retryRequest(url: string, retryFrequency = 5) {
   })
 }
 retryRequest('https://xxxxxxxxxx')
+
 </script>
